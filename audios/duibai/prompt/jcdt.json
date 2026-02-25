@@ -1,0 +1,139 @@
+{
+    "第一章太平道。": [
+        {
+            "speaker": "【旁白】",
+            "text": "一旁的夏姝噗嗤笑个不停，",
+            "type": 1,
+            "idx": "1000003",
+            "chapter_id": 2,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【夏姝-女-少年】",
+            "text": "叫师父给你多喂几碗符水，看你还胡说八道。我猜是师兄功力大进。",
+            "type": 1,
+            "idx": "1000004",
+            "chapter_id": 2,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【旁白】",
+            "text": "晏秋摇头，",
+            "type": 1,
+            "idx": "1000005",
+            "chapter_id": 2,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【晏秋-男-少年】",
+            "text": "江湖上精通巫术的灵媒婆子可不少，比如巴蜀合一派的通天神姥，她就能沟通阴阳。夏姝，你说是不是？",
+            "type": 1,
+            "idx": "1000013",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【夏姝-女-少年】",
+            "text": "是。",
+            "type": 1,
+            "idx": "1000014",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【旁白】",
+            "text": "小女娃缩着脖子，",
+            "type": 1,
+            "idx": "1000015",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【角悟子-男-老年】",
+            "text": "看守道坛，侍奉香客去吧。",
+            "type": 1,
+            "idx": "1000016",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【夏姝-女-少年】",
+            "text": "是。",
+            "type": 1,
+            "idx": "1000017",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【旁白】",
+            "text": "夏姝与晏秋当即应诺。待他们走后，老道领着周奕进入厢房静处，执其腕细细诊脉。不多时，垂阖的双目睁开。",
+            "type": 1,
+            "idx": "1000018",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【旁白】",
+            "text": "女娃侧首睃了周奕一眼，称奇道，",
+            "type": 1,
+            "idx": "1000021",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【夏姝-女-少年】",
+            "text": "师父的符水真灵验，五日前师兄还是个活死人，现已生龙活虎。",
+            "type": 1,
+            "idx": "1000022",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【晏秋-男-少年】",
+            "text": "应该是师父道法高明才对，",
+            "type": 1,
+            "idx": "1000023",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【旁白】",
+            "text": "夏姝却机灵一些，追问道，",
+            "type": 1,
+            "idx": "1000025",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【夏姝-女-少年】",
+            "text": "方才师兄所念，可是新作？",
+            "type": 1,
+            "idx": "1000026",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        },
+        {
+            "speaker": "【周奕-男-青年】",
+            "text": "不是。",
+            "type": 1,
+            "idx": "1000027",
+            "chapter_id": 1,
+            "add_sil": false,
+            "markedTitle": false
+        }
+    ]
+}

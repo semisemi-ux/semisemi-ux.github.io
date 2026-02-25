@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Takin AudioLLM - 简化版演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 25px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        header h1 {
+            font-size: 2.0rem;
+            margin-bottom: 6px;
+        }
+        
+        header p {
+            font-size: 1.0rem;
+            opacity: 0.9;
+        }
+        
+        .feature-section {
+            margin: 20px 0;
+            padding: 18px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 2px solid #007bff;
+        }
+        
+        .feature-section h2 {
+            color: #007bff;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .feature-section p {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .comparison-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .comparison-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .character-section {
+            margin: 40px 0 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 2px solid #007bff;
+        }
+
+        .prompt-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 6px;
+            border-left: 2px solid #28a745;
+        }
+
+        .prompt-label {
+            font-size: 14px;
+            font-weight: 400;
+            color: #28a745;
+            margin-bottom: 8px;
+        }
+
+        /* 表格样式 */
+        .character-comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+            border: 1px solid #e9ecef;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .table-header th {
+            padding: 12px 10px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            border: none;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .text-header {
+            width: 50%;
+        }
+
+        .system-header {
+            width: 16.67%;
+        }
+
+        .character-title-row {
+            background: #fafbfc;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        /* 角色标题行的背景色 */
+        .character-title-row.jiangxuening {
+            background: #fef7f7;
+        }
+        
+        .character-title-row.zhouyi {
+            background: #f7f9ff;
+        }
+        
+        .character-title-row.xiashu {
+            background: #f7fff7;
+        }
+
+        .character-title-cell {
+            padding: 12px 15px;
+            border: none;
+        }
+
+        .character-title-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 60px;
+        }
+
+        .character-title-content h3 {
+            color: #007bff;
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 400;
+        }
+
+        .character-title-content .character-description {
+            color: #666;
+            font-style: italic;
+            margin: 0;
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .prompt-section-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .prompt-section-inline .prompt-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #28a745;
+            margin: 0;
+            white-space: nowrap;
+        }
+        
+        .prompt-section-inline .audio-controls {
+            width: 200px;
+            height: 32px;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+
+        .demo-row {
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        /* 演示行不设置背景色，保持透明 */
+
+        .demo-row:hover {
+            background: #fafbfc;
+        }
+        
+        /* 角色悬停效果 - 统一使用浅灰色 */
+
+        .demo-row:last-child {
+            border-bottom: 1px solid #e9ecef;
+        }
+
+
+        .text-cell {
+            padding: 10px 12px;
+            vertical-align: middle;
+        }
+
+        .context-line {
+            margin-bottom: 3px;
+            font-size: 10px;
+            line-height: 1.3;
+        }
+
+        .context-label {
+            font-weight: 400;
+            color: #6c757d;
+            font-size: 10px;
+        }
+
+        .context-content {
+            color: #495057;
+            font-size: 10px;
+        }
+        
+        /* 当前文本的特殊颜色样式 */
+        .context-line.current-text .context-label {
+            color: #007bff;
+            font-weight: 500;
+        }
+        
+        .context-line.current-text .context-content {
+            color: #1976d2;
+            font-weight: 500;
+        }
+
+
+        .emotion-tag {
+            color: #ff6b6b;
+            font-weight: 500;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            background: #fff5f5;
+            padding: 4px 8px;
+            border-radius: 3px;
+            border: 1px solid #ffebee;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            line-height: 1;
+            height: 20px;
+            min-width: 60px;
+        }
+
+
+        .system-cell {
+            padding: 10px 8px;
+            text-align: center;
+            vertical-align: top;
+            position: relative;
+        }
+
+        .system-cell:last-child {
+            border-right: none;
+        }
+
+        /* 姜雪宁角色的系统列背景色 */
+        .demo-row.jiangxuening .system-cell {
+            background: #fefefe;
+            position: relative;
+        }
+        
+        .demo-row.jiangxuening .system-cell::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: #ffebee;
+            border-radius: 0 1px 1px 0;
+        }
+
+        /* 周奕角色的系统列背景色 */
+        .demo-row.zhouyi .system-cell {
+            background: #fefefe;
+            position: relative;
+        }
+        
+        .demo-row.zhouyi .system-cell::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: #e3f2fd;
+            border-radius: 0 1px 1px 0;
+        }
+
+        /* 夏姝角色的系统列背景色 */
+        .demo-row.xiashu .system-cell {
+            background: #fefefe;
+            position: relative;
+        }
+        
+        .demo-row.xiashu .system-cell::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: #e8f5e8;
+            border-radius: 0 1px 1px 0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            header {
+                margin-bottom: 20px;
+                padding: 20px 0;
+            }
+            
+            header h1 {
+                font-size: 1.6rem;
+            }
+            
+            header p {
+                font-size: 0.9rem;
+            }
+            
+            .feature-section {
+                margin: 15px 0;
+                padding: 15px;
+            }
+            
+            .feature-section h2 {
+                font-size: 1.3rem;
+            }
+            
+            .comparison-section {
+                margin: 15px 0;
+                padding: 12px;
+            }
+            
+            .comparison-section h3 {
+                font-size: 1.1rem;
+            }
+            
+            .character-comparison-table {
+                font-size: 10px;
+                margin: 12px 0;
+            }
+            
+            .table-header th {
+                padding: 8px 4px;
+                font-size: 11px;
+            }
+            
+            .text-cell {
+                padding: 6px 4px;
+            }
+            
+            .system-cell {
+                padding: 6px 4px;
+            }
+            
+            .character-title-cell {
+                padding: 8px 10px;
+            }
+            
+            .character-title-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            
+            .character-title-content h3 {
+                font-size: 1.2rem;
+            }
+            
+            .character-title-content .character-description {
+                font-size: 0.8rem;
+            }
+            
+            .prompt-section-inline {
+                align-self: flex-start;
+                width: 100%;
+                margin-top: 6px;
+            }
+            
+            .prompt-section-inline .audio-controls {
+                width: 150px;
+                height: 28px;
+            }
+            
+            .context-line {
+                font-size: 9px;
+                margin-bottom: 2px;
+            }
+            
+            .context-label {
+                font-size: 9px;
+            }
+            
+            .context-content {
+                font-size: 9px;
+            }
+            
+            /* 移动端当前文本颜色样式 */
+            .context-line.current-text .context-label {
+                color: #007bff;
+                font-weight: 500;
+            }
+            
+            .context-line.current-text .context-content {
+                color: #1976d2;
+                font-weight: 500;
+            }
+            
+            
+            .audio-placeholder-compact {
+                height: 28px;
+                font-size: 12px;
+            }
+            
+            .comparison-item {
+                padding: 12px;
+            }
+            
+            .comparison-item h4 {
+                font-size: 1.0rem;
+            }
+            
+            .text-sample {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+            
+            .placeholder-info {
+                padding: 6px;
+                font-size: 10px;
+            }
+            
+            .audio-placeholder {
+                height: 40px;
+                font-size: 11px;
+            }
+        }
+        
+        .character-section h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .character-description {
+            color: #666;
+            font-style: italic;
+            margin: 0;
+        }
+        
+        .demo-section {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .demo-context {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 2px solid #007bff;
+        }
+        
+        .context-text {
+            margin: 8px 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .demo-text {
+            margin: 12px 0;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+            font-weight: 400;
+            color: #1976d2;
+        }
+        
+        .systems-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .demo-section-compact {
+            margin: 12px 0;
+            padding: 12px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .demo-context-compact {
+            margin-bottom: 12px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 1px solid #007bff;
+        }
+        
+        .context-line {
+            margin: 4px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .context-label {
+            color: #666;
+            font-size: 0.8rem;
+            font-weight: 400;
+            min-width: 35px;
+            margin-right: 6px;
+        }
+        
+        .context-content {
+            color: #666;
+            font-size: 0.8rem;
+            flex: 1;
+        }
+        
+        .demo-text-compact {
+            margin: 8px 0;
+            padding: 6px;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        
+        .systems-comparison-compact {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .system-item {
+            text-align: center;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-top: 1px solid;
+        }
+        
+        .system-item.cosyvoice {
+            border-top-color: #28a745;
+        }
+        
+        .system-item.takin {
+            border-top-color: #007bff;
+        }
+        
+        .system-item.moss-ttsd {
+            position: relative;
+            background: linear-gradient(135deg, #fff5f5 0%, #f8f9fa 100%);
+        }
+        
+        .system-item.moss-ttsd::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ee5a52 50%, #dc3545 100%);
+            border-radius: 2px 2px 0 0;
+        }
+        
+        .system-item.moss-ttsd::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            width: 4px;
+            height: 4px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        
+        .system-label {
+            font-size: 0.75rem;
+            font-weight: 400;
+            margin-bottom: 6px;
+        }
+        
+        .system-item.cosyvoice .system-label {
+            color: #28a745;
+        }
+        
+        .system-item.takin .system-label {
+            color: #007bff;
+        }
+        
+        .system-item.moss-ttsd .system-label {
+            color: #dc3545;
+        }
+        
+        
+        
+        .comparison-item {
+            background-color: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-top: 2px solid;
+        }
+        
+        .comparison-item.takin {
+            border-top-color: #007bff;
+        }
+        
+        .comparison-item.cosyvoice {
+            border-top-color: #28a745;
+        }
+        
+        .comparison-item.moss-ttsd {
+            position: relative;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+        }
+        
+        .comparison-item.moss-ttsd::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ee5a52 50%, #dc3545 100%);
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .comparison-item.moss-ttsd::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            width: 5px;
+            height: 5px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+        
+        .comparison-item h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .comparison-item.takin h4 {
+            color: #007bff;
+        }
+        
+        .comparison-item.cosyvoice h4 {
+            color: #28a745;
+        }
+        
+        .comparison-item.moss-ttsd h4 {
+            color: #dc3545;
+        }
+        
+        .audio-demo {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .audio-demo h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        
+        .text-sample {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-style: italic;
+            position: relative;
+            font-size: 0.9rem;
+        }
+        
+        .text-sample::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #42a5f5 0%, #2196f3 50%, #1976d2 100%);
+            border-radius: 0 1px 1px 0;
+        }
+        
+        .text-sample::after {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 4px;
+            width: 5px;
+            height: 5px;
+            background: #42a5f5;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+        
+        .placeholder-info {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 8px;
+            margin: 8px 0;
+            font-size: 11px;
+            color: #856404;
+        }
+        
+        .audio-placeholder {
+            width: 100%;
+            height: 40px;
+            background: #fafbfc;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 12px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .audio-placeholder:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #2196f3;
+            color: #1976d2;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+        }
+        
+        .audio-controls {
+            width: 100%;
+            margin: 8px 0;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+        }
+        
+        .col-md-6 {
+            flex: 0 0 50%;
+            padding: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .col-md-6 {
+                flex: 0 0 100%;
+            }
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 35px;
+            padding: 20px;
+            background-color: #343a40;
+            color: white;
+            border-radius: 8px;
+        }
+        
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 8px;
+            font-size: 0.9rem;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* 旁白表格样式 */
+        .narration-text {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #495057;
+            white-space: pre-line;
+        }
+        
+        .narration-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .narration-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            border: none;
+        }
+        
+        .narration-table td {
+            padding: 15px 12px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+        
+        .voice-name {
+            font-weight: 500;
+            color: #007bff;
+            font-size: 1.1rem;
+        }
+        
+        .narration-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .narration-table .audio-controls {
+            width: 200px;
+            height: 35px;
+        }
+        
+        @media (max-width: 768px) {
+            .narration-table .audio-controls {
+                width: 150px;
+                height: 30px;
+            }
+            
+            .narration-table th,
+            .narration-table td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+        }
+
+        .voice-name {
+            font-weight: 500;
+            color: #007bff;
+            font-size: 1.1rem;
+            text-align: left;
+            vertical-align: top;
+            padding: 15px 12px;
+        }
+        
+        .voice-name .voice-title {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .voice-name .prompt-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+        
+        .voice-name .prompt-audio {
+            width: 180px;
+            height: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .voice-name .prompt-audio {
+                width: 150px;
+                height: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>CONTROLLABLE LONG-CONTEXT SPEECH GENERATION FOR AUDIOBOOK</h1>
+            <p>基于上下文理解的有声书生成系统</p>
+        </header>
+
+        <!-- 1. 长篇章旁白生成 -->
+        <div class="feature-section">
+            <h2>1. 长篇章旁白生成</h2>
+            <p>生成高质量的长篇旁白内容，适用于有声书场景。</p>
+ 
+            <!-- 音频对比表格 -->
+            <table class="narration-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">测试文本</th>
+                        <th style="width: 18.75%;">Prompt</th>
+                        <th style="width: 18.75%;">🎭 CosyVoice</th>
+                        <th style="width: 18.75%;">🤖 MOSS-TTSD</th>
+                        <th style="width: 18.75%;">🎯 Takin-context (Proposed)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="6" style="vertical-align: top; padding: 20px; text-align: left;">
+                            <div style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #f9f9f9;">
+                                <strong>第一章 - 太平道</strong><br><br>
+                                <div style="line-height: 1.6; font-size: 14px;">
+                                    "入春才七日,离家已二年。人归落雁后,思发在花前。"<br>
+                                    雍丘太平教道场,周奕半卧竹榻,脸盖一册古籍,封面上书着五个大字:"老子想尔注"。<br>
+                                    经书遮掩,旁人自然瞧不见他正郁闷。<br>
+                                    竹榻旁置一炕桌,长约五尺,中间放着顶混元巾,两沓符纸,左右两端各有一名小道童,一男一女,约摸十二三岁。<br>
+                                    他们手执一页竹简,观摩上面用朱砂画的禳灾符。<br>
+                                    女娃侧首睃了周奕一眼,称奇道:<br>
+                                    "师父的符水真灵验,五日前师兄还是个活死人,现已生龙活虎。"<br>
+                                    "应该是师父道法高明才对,"男娃仰脸露出神秘兮兮的表情。<br>
+                                    "那夜我被一阵锁链声惊醒,见师兄房中烛影摇曳,窗纸上映有两团黑影,想是阴间牛马前来拿人。<br>
+                                    幸得师父拿出五岳真形镜,沟通阴阳,足足照了一个时辰,总算收回师兄魂魄,这才醒转."<br>
+                                    "哎哟~!哎哟~!"<br>
+                                    二娃捂着脑袋叫痛,周奕手持《老子想尔注》,左敲右打。<br>
+                                    "不用心做课业,还沟通阴阳,师父能有那个活吗?"<br>
+                                    晏秋捂额叫屈道:"江湖上精通巫术的灵媒婆子可不少,比如巴蜀合一派的通天神姥,她就能沟通阴阳。夏姝,你说是不是?"<br>
+                                    "是。"小女娃缩着脖子,"但通天神姥乃是合一派前辈高人,你用灵媒婆子称呼太过不敬。<br>
+                                    "再者师兄乃是中毒,自然是符水解了毒。"<br>
+                                    两个天真的家伙,周奕闷色稍解,轻轻笑了笑。<br>
+                                    他们争执一通,见师兄不理会,遂又凑了上来。<br>
+                                    夏姝捧着肥嘟嘟的肉脸,眼中泛着好奇:"大病初愈后,师兄变化好大,最近伤春悲秋,总发诗兴。"<br>
+                                    "对啊对啊,"晏秋学着周奕的样子,摇头晃脑吟道,"什么房栊无行迹,庭草萋以绿。青苔依空墙,蜘蛛网四屋。"<br>
+                                    "我去请教师父,师兄言下之意可是要打扫道场,除掉蛛网青苔。<br>
+                                    师父说我痴,回了句什么'感物多所怀,沉忧结心曲'。"<br>
+                                    晏秋较为单纯,不明其意。<br>
+                                    "这是有心事,"夏姝却机灵一些,追问道:"方才师兄所念,可是新作?"<br>
+                                    "不是。"<br>
+                                    周奕摇头,穿越过后感觉自己的脑袋变灵光了,可总是隐隐作痛。<br>
+                                    他揉了揉额头,"那是河东的薛道衡所作,我偶尔听得。"<br>
+                                    两小嘀咕这个名字,拧着眉头思考。<br>
+                                    像在哪听过,又记不真切,这种感觉最是挠人。<br>
+                                    正要出口相寻,忽然一道苍老的声音幽幽传至小院。<br>
+                                    "薛道衡可惜了,他没能看透杨广好大喜功,刚愎自用,作《高祖文皇帝颂》惹其不悦,纵有一身才气,也难以身免。"<br>
+                                    身着灰白色道袍的老道自月洞转角缓步走出。<br>
+                                    他面容清瘦,颧骨微凸,眉毛早已花白,长长的眉梢垂至眼角,抚须而来,一派道家高人风范。<br>
+                                    这位老道长正是太平道教主,道号角悟子。<br>
+                                    "师父。"<br>
+                                    周奕、夏姝,晏秋三名太平教真传弟子各都恭敬见礼。<br>
+                                    两名小道童立马整冠理袍,垂手侍立,收起先前的活泼劲。<br>
+                                    慈祥和善的角悟子对他们来说极有威严。<br>
+                                    "看守道坛,侍奉香客去吧。"<br>
+                                    "是。"夏姝与晏秋当即应诺。<br>
+                                    待他们走后,老道领着周奕进入厢房静处,执其腕细细诊脉。<br>
+                                    不多时,垂阖的双目睁开。<br>
+                                    "脉息平和,已无大碍。"<br>
+                                    角悟子松了一大口气,他没有端着姿态,褪去了仙风道骨,像是一位普通老人。<br>
+                                    周奕知道自家师父的底细,一点也不奇怪。<br>
+                                    太平道场位于雍丘西郊,矗立孤山,算上坛场鼓楼,不逾七八亩。<br>
+                                    教中除了角悟子与三名真传,还有一些尚未收录只算信士的箓生,他们得到过角悟子所授的太平符箓,差一步拜入门墙,其余都是些帮客杂工。<br>
+                                    角悟子施符治病,宣扬善道教化,以致太平。<br>
+                                    在民间有了些名气,后来交口相传,人云亦云,逐渐成了江湖人口中名震雍丘的高手。<br>
+                                    有此威名,宵小不敢来犯,算是尝到甜头。<br>
+                                    虽有些江湖人慕名而来,糊弄一下也就过去了。<br>
+                                    一来二去,就成了现在的模样。<br>
+                                    不过<br>
+                                    周奕看向角悟子,说出顾虑:"师父,眼下四海皆沸,没了清平世界,须知汉灵帝时,大贤良师创太平教,建三十六方义战天下。<br>
+                                    有史为鉴,如今正值朝堂兴兵剿贼,咱们再持'太平道'这一名号,恐怕.<br>
+                                    恐怕张须陀就要从长白山打到咱们夫子山下。"<br>
+                                    他伸手朝法坛方向指了指。<br>
+                                    师徒二人举目望去,太平道场法坛上空浓烟滚滚,香火旺到没边了。<br>
+                                    世道越乱,太平道香火就越旺。<br>
+                                    角悟子面色骤沉,忍不住骂道:"杨广这昏君!"<br>
+                                    "哪怕他安居紫微宫不问朝事,混吃等死,天下也乱不至此。"<br>
+                                    周奕眨巴眨巴眼睛,人家广神要微操,你有什么办法。<br>
+                                    "时也命也."<br>
+                                    听他轻声叹息,周奕暗松心弦。<br>
+                                    看来师父听劝了,'太平道'这名头可不能再背下去。<br>
+                                    然而.<br>
+                                    老道长忽然目露精光,抚须朗声道:<br>
+                                    "苍天已死,黄天当立,岁在甲子,天下大吉。"<br>
+                                    十六字悠悠出口振聋发聩,若非知情之人,恰逢乱世,恐怕真拿不准他的底细。<br>
+                                    周奕咋舌,这师父也想起舞吗?<br>
+                                    "您要效仿知世郎?"<br>
+                                    "不是为师,而是你。"<br>
+                                    "我?"<br>
+                                    周奕指了指自己,立马将头摇成拨浪鼓,"您别开玩笑,徒儿未及弱冠,尚想多活几年。"<br>
+                                    五天前,作为找不到出路的艺术生,又等到了考公落榜的消息,伤心之下喝了点酒。<br>
+                                    一觉醒来后,人懵了。<br>
+                                    这给我干哪来了?<br>
+                                    稍一打听,才明白过来这是黄师乱世大唐。<br>
+                                    高手一大堆,牛人满地走的世界。<br>
+                                    若打着太平道的旗号起义,岂不是既要争道统,又要争天下。<br>
+                                    靠什么争?<br>
+                                    唯有'苍天已死'等十六字嘴遁大法。<br>
+                                    角悟子早料到他是这般反应,"你先前中毒深入肺腑,本是必死无疑。没成想由死转生,实乃奇迹。<br>
+                                    加之你是我太平教弟子,逢经乱世,岂非天之定数?"<br>
+                                    周奕左耳朵进,右耳朵出,绝不信师父鬼话。<br>
+                                    老道长见忽悠不住,忽展笑颜:"为师创太平道场并非效仿大贤良师,实有道统传承。"<br>
+                                    周奕哦了一声,来了点兴趣。<br>
+                                    角悟子言道:"本教治病救人以符水掩饰,病患所饮之药,皆出自太平丹方,为师得此丹方,苦心钻研,有了一身医术,感念授业恩德,这才立教。<br>
+                                    除太平丹方之外,另有一卷记载,内阐精深武学奥义。"<br>
+                                    "此法上承道家之祖老子的《道德经》,再集两汉道法大成,渊源自黄老,法授天人,非是一般武学能望其项背。"<br>
+                                    老道长话罢淡定抚须,瞧着徒儿的反应。<br>
+                                    听到这,周奕不由呼吸一滞。<br>
+                                    '这么算来,师父的太平道并非招摇撞骗,而是继承自黄巾覆灭后的南派道门,那这部武学呼之欲出,岂不就是<br>
+                                    黄天大法!!<br>
+                                    这可不输四大奇书啊!'<br>
+                                    角悟子笑问:"想学吗?"<br>
+                                    周奕心念急转,态度已然大变。<br>
+                                    当下顺遂师父的心意,口衔慷慨之气吟道:"长白山前知世郎,纯著红罗锦背裆"<br>
+                                    "师父既有此妙法,又有什么好怕的?知世郎建立长白山圣地,咱们就建一个夫子山圣地。<br>
+                                    昏君不仁,乱世待平。<br>
+                                    师父,反了,咱们反了!"
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls prompt-audio" preload="none" id="prompt-喜千晚-audio">
+                                <source src="audios/pangbai/prompt/喜千晚.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="cosyvoice-喜千晚-audio">
+                                <source src="audios/pangbai/cosy-outputs/cosy-喜千晚.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="moss-喜千晚-audio">
+                                <source src="audios/pangbai/moss-ttsd-outputs/moss-ttsd-喜千晚-output_0.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="takin-喜千晚-audio">
+                                <source src="audios/pangbai/takin-context-outputs/ctx_test_剑出大唐1_喜千晚.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <audio controls class="audio-controls prompt-audio" preload="none" id="prompt-喜千言-audio">
+                                <source src="audios/pangbai/prompt/喜千言.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="cosyvoice-喜千言-audio">
+                                <source src="audios/pangbai/cosy-outputs/cosy-喜千言.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="moss-喜千言-audio">
+                                <source src="audios/pangbai/moss-ttsd-outputs/moss-ttsd-喜千言-output_0.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="takin-喜千言-audio">
+                                <source src="audios/pangbai/takin-context-outputs/ctx_test_剑出大唐1_喜千言.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <audio controls class="audio-controls prompt-audio" preload="none" id="prompt-喜千辰-audio">
+                                <source src="audios/pangbai/prompt/喜千辰.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="cosyvoice-喜千辰-audio">
+                                <source src="audios/pangbai/cosy-outputs/cosy-喜千辰.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="moss-喜千辰-audio">
+                                <source src="audios/pangbai/moss-ttsd-outputs/moss-ttsd-喜千辰-output_0.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="takin-喜千辰-audio">
+                                <source src="audios/pangbai/takin-context-outputs/ctx_test_剑出大唐1_喜千辰.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <audio controls class="audio-controls prompt-audio" preload="none" id="prompt-喜小云-audio">
+                                <source src="audios/pangbai/prompt/喜小云.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="cosyvoice-喜小云-audio">
+                                <source src="audios/pangbai/cosy-outputs/cosy-喜小云.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="moss-喜小云-audio">
+                                <source src="audios/pangbai/moss-ttsd-outputs/moss-ttsd-喜小云-output_0.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="takin-喜小云-audio">
+                                <source src="audios/pangbai/takin-context-outputs/ctx_test_剑出大唐1_喜小云.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <audio controls class="audio-controls prompt-audio" preload="none" id="prompt-喜小迪-audio">
+                                <source src="audios/pangbai/prompt/喜小迪.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="cosyvoice-喜小迪-audio">
+                                <source src="audios/pangbai/cosy-outputs/cosy-喜小迪.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="moss-喜小迪-audio">
+                                <source src="audios/pangbai/moss-ttsd-outputs/moss-ttsd-喜小迪-output_0.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="takin-喜小迪-audio">
+                                <source src="audios/pangbai/takin-context-outputs/ctx_test_剑出大唐1_喜小迪.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <audio controls class="audio-controls prompt-audio" preload="none" id="prompt-喜灵霏-audio">
+                                <source src="audios/pangbai/prompt/喜灵霏.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="cosyvoice-喜灵霏-audio">
+                                <source src="audios/pangbai/cosy-outputs/cosy-喜灵霏.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="moss-喜灵霏-audio">
+                                <source src="audios/pangbai/moss-ttsd-outputs/moss-ttsd-喜灵霏-output_0.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                        <td>
+                            <audio controls class="audio-controls" preload="none" id="takin-喜灵霏-audio">
+                                <source src="audios/pangbai/takin-context-outputs/ctx_test_剑出大唐1_喜灵霏.mp3" type="audio/mpeg">
+                            </audio>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 2. 角色音对比展示 -->
+        <div class="feature-section">
+            <h2>2. 角色音对比展示</h2>
+            <p>基于上下文理解的角色音生成对比：1. 是否更贴合上下文语境；2. 是否表现力更好；</p>
+            
+            
+            <!-- 角色对比展示 -->
+            <div id="character-comparison">
+                <!-- 动态生成的对比内容 -->
+            </div>
+        </div>
+
+        <!-- 3. 多播角色音控制 -->
+        <div class="feature-section">
+            <h2>3. 多播角色音控制</h2>
+            <p>精确控制角色的情感表达和语音风格，实现细腻的情感演绎。</p>
+            
+            <!-- 角色情感控制演示 -->
+            <div id="emotion-control-demo">
+                <!-- 动态生成的情感控制内容 -->
+            </div>
+        </div>
+
+        <!-- 4. 有声书制作生成 -->
+        <div class="feature-section">
+            <h2>4. 有声书制作生成</h2>
+            <p>专业的有声书制作功能，支持不同风格和场景的音频内容生成。</p>
+            
+            <div class="comparison-section">
+                <h3>系统对比：悬疑风格有声书</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-item takin">
+                        <h4>🎯 Takin AudioLLM</h4>
+                        <div class="text-sample">
+                            "夜幕降临，古老的庄园里传来阵阵诡异的声音。月光透过破旧的窗户洒在地板上，形成斑驳的光影。"
+                        </div>
+                        <div class="placeholder-info">
+                            📁 音频文件位置: audios/audiobook_production/takin_mystery.mp3
+                        </div>
+                        <div class="audio-placeholder" id="takin-mystery-placeholder">
+                            <span class="audio-icon"></span>Takin 悬疑风格
+                        </div>
+                        <audio controls class="audio-controls" preload="none"  id="takin-mystery-audio">
+                            <source src="audios/audiobook_production/takin_mystery.mp3" type="audio/mpeg">
+                        </audio>
+                    </div>
+                    
+                    <div class="comparison-item cosyvoice">
+                        <h4>🎭 CosyVoice</h4>
+                        <div class="text-sample">
+                            "夜幕降临，古老的庄园里传来阵阵诡异的声音。月光透过破旧的窗户洒在地板上，形成斑驳的光影。"
+                        </div>
+                        <div class="placeholder-info">
+                            📁 音频文件位置: audios/audiobook_production/cosyvoice_mystery.mp3
+                        </div>
+                        <div class="audio-placeholder" id="cosyvoice-mystery-placeholder">
+                            <span class="audio-icon"></span>CosyVoice 悬疑风格
+                        </div>
+                        <audio controls class="audio-controls" preload="none"  id="cosyvoice-mystery-audio">
+                            <source src="audios/audiobook_production/cosyvoice_mystery.mp3" type="audio/mpeg">
+                        </audio>
+                    </div>
+                    
+                    <div class="comparison-item moss-ttsd">
+                        <h4>🤖 MOSS-TTSD</h4>
+                        <div class="text-sample">
+                            "夜幕降临，古老的庄园里传来阵阵诡异的声音。月光透过破旧的窗户洒在地板上，形成斑驳的光影。"
+                        </div>
+                        <div class="placeholder-info">
+                            📁 音频文件位置: audios/audiobook_production/moss_mystery.mp3
+                        </div>
+                        <div class="audio-placeholder" id="moss-mystery-placeholder">
+                            <span class="audio-icon"></span>MOSS-TTSD 悬疑风格
+                        </div>
+                        <audio controls class="audio-controls" preload="none"  id="moss-mystery-audio">
+                            <source src="audios/audiobook_production/moss_mystery.mp3" type="audio/mpeg">
+                        </audio>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-section">
+                <h3>系统对比：睡眠故事有声书</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-item takin">
+                        <h4>🎯 Takin AudioLLM</h4>
+                        <div class="text-sample">
+                            "在一个宁静的夜晚，星星在天空中闪烁，月亮温柔地照耀着大地。微风轻抚过树梢，发出轻柔的沙沙声。"
+                        </div>
+                        <div class="placeholder-info">
+                            📁 音频文件位置: audios/audiobook_production/takin_sleep.mp3
+                        </div>
+                        <div class="audio-placeholder" id="takin-sleep-placeholder">
+                            <span class="audio-icon"></span>Takin 睡眠故事
+                        </div>
+                        <audio controls class="audio-controls" preload="none"  id="takin-sleep-audio">
+                            <source src="audios/audiobook_production/takin_sleep.mp3" type="audio/mpeg">
+                        </audio>
+                    </div>
+                    
+                    <div class="comparison-item cosyvoice">
+                        <h4>🎭 CosyVoice</h4>
+                        <div class="text-sample">
+                            "在一个宁静的夜晚，星星在天空中闪烁，月亮温柔地照耀着大地。微风轻抚过树梢，发出轻柔的沙沙声。"
+                        </div>
+                        <div class="placeholder-info">
+                            📁 音频文件位置: audios/audiobook_production/cosyvoice_sleep.mp3
+                        </div>
+                        <div class="audio-placeholder" id="cosyvoice-sleep-placeholder">
+                            <span class="audio-icon"></span>CosyVoice 睡眠故事
+                        </div>
+                        <audio controls class="audio-controls" preload="none"  id="cosyvoice-sleep-audio">
+                            <source src="audios/audiobook_production/cosyvoice_sleep.mp3" type="audio/mpeg">
+                        </audio>
+                    </div>
+                    
+                    <div class="comparison-item moss-ttsd">
+                        <h4>🤖 MOSS-TTSD</h4>
+                        <div class="text-sample">
+                            "在一个宁静的夜晚，星星在天空中闪烁，月亮温柔地照耀着大地。微风轻抚过树梢，发出轻柔的沙沙声。"
+                        </div>
+                        <div class="placeholder-info">
+                            📁 音频文件位置: audios/audiobook_production/moss_sleep.mp3
+                        </div>
+                        <div class="audio-placeholder" id="moss-sleep-placeholder">
+                            <span class="audio-icon"></span>MOSS-TTSD 睡眠故事
+                        </div>
+                        <audio controls class="audio-controls" preload="none"  id="moss-sleep-audio">
+                            <source src="audios/audiobook_production/moss_sleep.mp3" type="audio/mpeg">
+                        </audio>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 Takin AudioLLM - 喜马拉雅 Everest 团队</p>
+            <p>
+                <a href="https://arxiv.org/abs/2409.12139" target="_blank">论文</a> | 
+                <a href="https://everest-ai.ximalaya.com/" target="_blank">官方网站</a> |
+                <a href="AUDIO_SETUP.md" target="_blank">音频配置说明</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+
+        // 角色音对比数据
+        const characterData = {
+            xiashu: {
+                name: "夏姝",
+                description: "太平教道童，机灵活泼，对师兄充满好奇",
+                demos: [
+                    {
+                        id: "1000004",
+                        text: "叫师父给你多喂几碗符水，看你还胡说八道。我猜是师兄功力大进。",
+                        context: "一旁的夏姝噗嗤笑个不停，",
+                        nextContext: "晏秋摇头，"
+                    },
+                    {
+                        id: "1000014", 
+                        text: "是。",
+                        context: "江湖上精通巫术的灵媒婆子可不少，比如巴蜀合一派的通天神姥，她就能沟通阴阳。夏姝，你说是不是？",
+                        nextContext: "小女娃缩着脖子，"
+                    },
+                    {
+                        id: "1000017",
+                        text: "是。",
+                        context: "看守道坛，侍奉香客去吧。",
+                        nextContext: "夏姝与晏秋当即应诺。待他们走后，老道领着周奕进入厢房静处，执其腕细细诊脉。不多时，垂阖的双目睁开。"
+                    },
+                    {
+                        id: "1000022",
+                        text: "师父的符水真灵验，五日前师兄还是个活死人，现已生龙活虎。",
+                        context: "女娃侧首睃了周奕一眼，称奇道，",
+                        nextContext: "应该是师父道法高明才对，"
+                    },
+                    {
+                        id: "1000026",
+                        text: "方才师兄所念，可是新作？",
+                        context: "夏姝却机灵一些，追问道，",
+                        nextContext: "不是。"
+                    }
+                ]
+            },
+            zhouyi: {
+                name: "周奕",
+                description: "太平教弟子，穿越者，聪明机智",
+                demos: [
+                    {
+                        id: "1000011",
+                        text: "不用心做课业，还沟通阴阳，师父能有那个活吗？",
+                        context: "二娃捂着脑袋叫痛，周奕手持《老子想尔注》，左敲右打。",
+                        nextContext: "晏秋捂额叫屈道，"
+                    },
+                    {
+                        id: "1000029",
+                        text: "那是河东的薛道衡所作，我偶尔听得。",
+                        context: "周奕摇头，穿越过后感觉自己的脑袋变灵光了，可总是隐隐作痛。他揉了揉额头，",
+                        nextContext: "两小嘀咕这个名字，拧着眉头思考。"
+                    },
+                    {
+                        id: "1000034",
+                        text: "师父。",
+                        context: "身着灰白色道袍的老道自月洞转角缓步走出。",
+                        nextContext: "周奕、夏姝，晏秋三名太平教真传弟子各都恭敬见礼。"
+                    },
+                    {
+                        id: "1000057",
+                        text: "我？",
+                        context: "周奕指了指自己，立马将头摇成拨浪鼓，",
+                        nextContext: "您别开玩笑，徒儿未及弱冠，尚想多活几年。"
+                    },
+                    {
+                        id: "1000072",
+                        text: "长白山前知世郎，纯著红罗锦背裆。师父既有此妙法，又有什么好怕的？知世郎建立长白山圣地，咱们就建一个夫子山圣地。昏君不仁，乱世待平。师父，反了，咱们反了！",
+                        context: "周奕心念急转，态度已然大变。当下顺遂师父的心意，口衔慷慨之气吟道，",
+                        nextContext: ""
+                    }
+                ]
+            },
+            jiangxuening: {
+                name: "姜雪宁",
+                description: "前皇后，性格强势，有威严",
+                demos: [
+                    {
+                        id: "1000067",
+                        text: "放肆！",
+                        context: "唔，姜兄我们继续睡，",
+                        nextContext: "好歹是当过皇后甚至号令过百官的人，姜雪宁听他出言不逊，还见他举止放浪，完全下意识地一巴掌朝他脸上甩去！"
+                    },
+                    {
+                        id: "1000319",
+                        text: "你再哭一声试试！",
+                        context: "她眉一蹙，神情便冷了下来。",
+                        nextContext: "嗝！"
+                    },
+                    {
+                        id: "1003004",
+                        text: "避无可避，不如见招拆招！",
+                        context: "她缓缓地闭上了眼睛，在心里将这个时间念了又念，终于缓缓地吐出一口气来。",
+                        nextContext: "躲得了当然好。可实在躲不了，她也不想引颈受戮。"
+                    },
+                    {
+                        id: "1003056",
+                        text: "许老板给你钱？",
+                        context: "姜雪宁疑惑，",
+                        nextContext: "尤芳吟小鸡啄米似的点头，一说起这个来，两只眼睛便亮晶晶地，"
+                    },
+                    {
+                        id: "1003257",
+                        text: "自我记事起，婉娘就是一个很有脾气的人。我们那时候住在乡下的庄子里,因为是被府里赶出来的,所以很多人都欺负我们，说一些风言风语。我很害怕。但她会从屋里走出来，站在屋檐下,笑着一句一句骂回去。",
+                        context: "姜雪宁轻轻地拿起了她搁在妆奁上一串用红玛瑙穿成的手链，",
+                        nextContext: "姜雪蕙微微闭上了眼。但姜雪宁的声音一直在耳边响起，"
+                    },
+                    {
+                        id: "1003297",
+                        text: "是该走了。",
+                        context: "姜雪宁便道，",
+                        nextContext: "只是往外迈出两步之后，她又停下，回眸用一种深深的目光望着她，"
+                    }
+                ]
+            }
+        };
+
+        // 情感控制演示数据
+        const emotionControlData = {
+            albert: {
+                name: "Albert",
+                description: "男性角色，声音沉稳",
+                prompt: "0342_minimax_voice_albert_1.wav",
+                instructionEmotions: {
+                    angry: {
+                        name: "愤怒",
+                        text: "您别开玩笑，徒儿未及弱冠，尚想多活几年。",
+                        context: "他非常气愤地大声说道：",
+                        emotion: "非常愤怒",
+                        files: {
+                            cosy2_1_5b: "angry_low_14--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "angry_low_14--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    angry2: {
+                        name: "愤怒2",
+                        text: "知世郎建立长白山圣地，咱们就建一个夫子山圣地。",
+                        context: "他非常气愤地大声说道：",
+                        emotion: "非常愤怒",
+                        files: {
+                            cosy2_1_5b: "angry_low_20--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "angry_low_20--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    happy: {
+                        name: "开心",
+                        text: "师父，眼下四海皆沸，没了清平世界，须知汉灵帝时，大贤良师创太平教，建三十六方义战天下。",
+                        context: "他非常兴奋地说道：",
+                        emotion: "非常高兴",
+                        files: {
+                            cosy2_1_5b: "happy_low_11--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "happy_low_11--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    happy2: {
+                        name: "开心2",
+                        text: "那这部武学呼之欲出，岂不就是。黄天大法！！",
+                        context: "他非常兴奋地说道：",
+                        emotion: "非常高兴",
+                        files: {
+                            cosy2_1_5b: "happy_low_18--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "happy_low_18--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    sad: {
+                        name: "悲伤",
+                        text: "您别开玩笑，徒儿未及弱冠，尚想多活几年。",
+                        context: "他非常难过地说道：",
+                        emotion: "非常悲伤",
+                        files: {
+                            cosy2_1_5b: "sad_low_15--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "sad_low_15--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    sad2: {
+                        name: "悲伤2",
+                        text: "有史为鉴，如今正值朝堂兴兵剿贼，咱们再持太平道这一名号，恐怕...",
+                        context: "他非常难过地说道：",
+                        emotion: "非常悲伤",
+                        files: {
+                            cosy2_1_5b: "sad_low_20--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "sad_low_20--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    fear: {
+                        name: "恐惧",
+                        text: "您别开玩笑，徒儿未及弱冠，尚想多活几年。",
+                        context: "他非常恐惧地说道：",
+                        emotion: "非常害怕",
+                        files: {
+                            cosy2_1_5b: "fear_low_11--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "fear_low_11--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    fear2: {
+                        name: "恐惧2",
+                        text: "您要效仿知世郎？",
+                        context: "他非常恐惧地说道：",
+                        emotion: "非常害怕",
+                        files: {
+                            cosy2_1_5b: "fear_low_12--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "fear_low_12--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    }
+                },
+                mixedEmotions: {
+                    mix1: {
+                        name: "混合情感1",
+                        text: "不用心做课业，还沟通阴阳，师父能有那个活吗？",
+                        context: "他非常气愤地大声说道：",
+                        emotion: "比较愤怒，带一些厌恶，音量高，中音",
+                        files: {
+                            cosy2_1_5b: "emo_mix_05--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_05--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    mix2: {
+                        name: "混合情感2",
+                        text: "师父，眼下四海皆沸，没了清平世界，须知汉灵帝时，大贤良师创太平教，建三十六方义战天下。",
+                        context: "他气愤地大声说道：",
+                        emotion: "比较愤怒，带一些害怕，音量高，语速较快",
+                        files: {
+                            cosy2_1_5b: "emo_mix_20--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_20--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    mix3: {
+                        name: "混合情感3",
+                        text: "有史为鉴，如今正值朝堂兴兵剿贼，咱们再持太平道这一名号，恐怕...",
+                        context: "他害怕地说道：",
+                        emotion: "比较害怕，带一些警惕，音量适中，语速较慢",
+                        files: {
+                            cosy2_1_5b: "emo_mix_21--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_21--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    },
+                    mix4: {
+                        name: "混合情感4",
+                        text: "恐怕张须陀就要从长白山打到咱们夫子山下。",
+                        context: "他害怕地说道：",
+                        emotion: "比较害怕，带一些警惕，音量适中，低音",
+                        files: {
+                            cosy2_1_5b: "emo_mix_22--0342_minimax_voice_albert_1--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_22--0342_minimax_voice_albert_1--output_wav.wav"
+                        }
+                    }
+                }
+            },
+            barbara: {
+                name: "Barbara",
+                description: "女性角色，声音优雅",
+                prompt: "0381_minimax_voice_barbara_1-prompt_wav.wav",
+                instructionEmotions: {
+                    angry: {
+                        name: "愤怒",
+                        text: "方才师兄所念，可是新作？",
+                        context: "她非常气愤地大声说道：",
+                        emotion: "非常愤怒",
+                        files: {
+                            cosy2_1_5b: "angry_low_28--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "angry_low_28--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    angry2: {
+                        name: "愤怒2",
+                        text: "这是有心事？",
+                        context: "她非常气愤地大声说道：",
+                        emotion: "非常愤怒",
+                        files: {
+                            cosy2_1_5b: "angry_low_31--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "angry_low_31--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    happy: {
+                        name: "开心",
+                        text: "对啊对啊！",
+                        context: "她非常兴奋地说道：",
+                        emotion: "非常开心",
+                        files: {
+                            cosy2_1_5b: "happy_low_23--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "happy_low_23--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    happy2: {
+                        name: "开心2",
+                        text: "方才师兄所念，可是新作？",
+                        context: "她非常兴奋地说道：",
+                        emotion: "非常开心",
+                        files: {
+                            cosy2_1_5b: "happy_low_26--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "happy_low_26--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    sad: {
+                        name: "悲伤",
+                        text: "但通天神姥乃是合一派前辈高人，你用灵媒婆子称呼太过不敬。",
+                        context: "她非常难过地说道：",
+                        emotion: "非常悲伤",
+                        files: {
+                            cosy2_1_5b: "sad_low_25--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "sad_low_25--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    sad2: {
+                        name: "悲伤2",
+                        text: "这是有心事？",
+                        context: "她非常难过地说道：",
+                        emotion: "非常悲伤",
+                        files: {
+                            cosy2_1_5b: "sad_low_31--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "sad_low_31--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    fear: {
+                        name: "恐惧",
+                        text: "但通天神姥乃是合一派前辈高人，你用灵媒婆子称呼太过不敬。",
+                        context: "她非常恐惧地说道：",
+                        emotion: "非常恐惧",
+                        files: {
+                            cosy2_1_5b: "fear_low_19--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "fear_low_19--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    fear2: {
+                        name: "恐惧2",
+                        text: "这是有心事？",
+                        context: "她非常恐惧地说道：",
+                        emotion: "非常恐惧",
+                        files: {
+                            cosy2_1_5b: "fear_low_24--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "fear_low_24--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    }
+                },
+                mixedEmotions: {
+                    mix1: {
+                        name: "混合情感1",
+                        text: "江湖上精通巫术的灵媒婆子可不少，比如巴蜀合一派的通天神姥，她就能沟通阴阳。",
+                        context: "她钦佩地说道：",
+                        emotion: "语气平稳，带一些警惕、一些钦佩，音量适中",
+                        files: {
+                            cosy2_1_5b: "emo_mix_06--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_06--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    mix2: {
+                        name: "混合情感2",
+                        text: "夏姝，你说是不是？",
+                        context: "她疑惑地说道：",
+                        emotion: "比较惊讶，带一些警惕，音量适中",
+                        files: {
+                            cosy2_1_5b: "emo_mix_07--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_07--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    mix3: {
+                        name: "混合情感3",
+                        text: "是。但通天神姥乃是合一派前辈高人，你用灵媒婆子称呼太过不敬。",
+                        context: "她气愤地大声说道：",
+                        emotion: "比较害怕，带一些愤怒，音量适中，中高音",
+                        files: {
+                            cosy2_1_5b: "emo_mix_08--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_08--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    },
+                    mix4: {
+                        name: "混合情感4",
+                        text: "方才师兄所念，可是新作？",
+                        context: "她疑惑地说道：",
+                        emotion: "比较惊讶，带一些钦佩，音量适中",
+                        files: {
+                            cosy2_1_5b: "emo_mix_15--0381_minimax_voice_barbara_1--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_15--0381_minimax_voice_barbara_1--output_wav.wav"
+                        }
+                    }
+                }
+            },
+            jichangming: {
+                name: "季昌明",
+                description: "中文角色，声音成熟",
+                prompt: "33612_季昌明_73158.wav",
+                instructionEmotions: {
+                    angry: {
+                        name: "愤怒",
+                        text: "不是为师，而是你。",
+                        context: "他非常气愤地大声说道：",
+                        emotion: "非常愤怒",
+                        files: {
+                            cosy2_1_5b: "angry_low_02--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "angry_low_02--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    angry2: {
+                        name: "愤怒2",
+                        text: "你先前中毒深入肺腑，本是必死无疑。",
+                        context: "他非常气愤地大声说道：",
+                        emotion: "非常愤怒",
+                        files: {
+                            cosy2_1_5b: "angry_low_03--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "angry_low_03--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    happy: {
+                        name: "开心",
+                        text: "为师创太平道场并非效仿大贤良师，实有道统传承。",
+                        context: "他非常兴奋地说道：",
+                        emotion: "非常高兴",
+                        files: {
+                            cosy2_1_5b: "happy_low_02--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "happy_low_02--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    happy2: {
+                        name: "开心2",
+                        text: "想学吗？",
+                        context: "他非常兴奋地说道：",
+                        emotion: "非常高兴",
+                        files: {
+                            cosy2_1_5b: "happy_low_05--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "happy_low_05--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    sad: {
+                        name: "悲伤",
+                        text: "为师创太平道场并非效仿大贤良师，实有道统传承。",
+                        context: "他非常难过地说道：",
+                        emotion: "非常悲伤",
+                        files: {
+                            cosy2_1_5b: "sad_low_03--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "sad_low_03--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    sad2: {
+                        name: "悲伤2",
+                        text: "加之你是我太平教弟子，逢经乱世，岂非天之定数？",
+                        context: "他非常难过地说道：",
+                        emotion: "非常悲伤",
+                        files: {
+                            cosy2_1_5b: "sad_low_05--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "sad_low_05--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    fear: {
+                        name: "恐惧",
+                        text: "加之你是我太平教弟子，逢经乱世，岂非天之定数？",
+                        context: "他非常恐惧地说道：",
+                        emotion: "非常害怕",
+                        files: {
+                            cosy2_1_5b: "fear_low_04--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "fear_low_04--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    fear2: {
+                        name: "恐惧2",
+                        text: "苍天已死，黄天当立，岁在甲子，天下大吉。",
+                        context: "他非常恐惧地说道：",
+                        emotion: "非常害怕",
+                        files: {
+                            cosy2_1_5b: "fear_low_06--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "fear_low_06--33612_季昌明_73158--output_wav.wav"
+                        }
+                    }
+                },
+                mixedEmotions: {
+                    mix1: {
+                        name: "混合情感1",
+                        text: "看守道坛，侍奉香客去吧。",
+                        context: "他平静地说道：",
+                        emotion: "语气平稳，带一些高兴、一些警惕，音量适中，语速较慢",
+                        files: {
+                            cosy2_1_5b: "emo_mix_18--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_18--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    mix2: {
+                        name: "混合情感2",
+                        text: "时也命也。",
+                        context: "他难过地说道：",
+                        emotion: "比较悲伤，带一些愤怒，音量适中，语速较慢",
+                        files: {
+                            cosy2_1_5b: "emo_mix_24--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_24--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    mix3: {
+                        name: "混合情感3",
+                        text: "你先前中毒深入肺腑，本是必死无疑。没成想由死转生，实乃奇迹。",
+                        context: "他惊讶地说道：",
+                        emotion: "比较惊讶，带一些钦佩，音量适中，语速较快",
+                        files: {
+                            cosy2_1_5b: "emo_mix_29--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_29--33612_季昌明_73158--output_wav.wav"
+                        }
+                    },
+                    mix4: {
+                        name: "混合情感4",
+                        text: "本教治病救人以符水掩饰，病患所饮之药，皆出自太平丹方，为师得此丹方，苦心钻研，有了一身医术，感念授业恩德，这才立教。",
+                        context: "他自豪地说道：",
+                        emotion: "比较钦佩，带一些高兴，音量适中，高音",
+                        files: {
+                            cosy2_1_5b: "emo_mix_32--33612_季昌明_73158--output_wav.wav",
+                            cosyvoice2_base: "emo_mix_32--33612_季昌明_73158--output_wav.wav"
+                        }
+                    }
+                }
+            }
+        };
+
+        // 生成情感控制演示内容
+        function generateEmotionControlDemo() {
+            const container = document.getElementById('emotion-control-demo');
+            if (!container) {
+                console.error('Emotion control demo container not found');
+                return;
+            }
+            console.log('Emotion control demo container found, generating content...');
+
+            // 按指定顺序显示角色：albert > barbara > jichangming
+            const characterOrder = ['albert', 'barbara', 'jichangming'];
+            
+            characterOrder.forEach(characterKey => {
+                const character = emotionControlData[characterKey];
+                console.log(`Generating emotion control demo for character: ${characterKey}`);
+                
+                // 创建角色情感控制部分
+                const characterSection = document.createElement('div');
+                characterSection.className = 'character-section';
+                characterSection.innerHTML = `
+                    <h3>${character.name}</h3>
+                    <p class="character-description">${character.description}</p>
+                    <div class="prompt-section">
+                        <div class="prompt-label">角色Prompt：</div>
+                        <audio controls class="audio-controls" preload="none" id="prompt-${characterKey}-emotion-audio">
+                            <source src="audios/instruction/prompt/${character.prompt}" type="audio/wav">
+                        </audio>
+                    </div>
+                `;
+                
+                // 创建指令情感表格
+                const instructionTable = document.createElement('table');
+                instructionTable.className = 'character-comparison-table';
+                instructionTable.innerHTML = `
+                    <thead>
+                        <tr class="table-header">
+                            <th class="text-header">指令情感文本</th>
+                            <th class="system-header">🎭 CosyVoice2-1.5B-XVector</th>
+                            <th class="system-header">🎭 CosyVoice2-Base</th>
+                        </tr>
+                    </thead>
+                    <tbody id="instruction-${characterKey}-tbody">
+                    </tbody>
+                `;
+                
+                // 为每个指令情感创建行
+                Object.keys(character.instructionEmotions).forEach(emotionKey => {
+                    const emotion = character.instructionEmotions[emotionKey];
+                    const tbody = instructionTable.querySelector(`#instruction-${characterKey}-tbody`);
+                    const row = document.createElement('tr');
+                    row.className = `demo-row ${characterKey}`;
+                    row.innerHTML = `
+                        <td class="text-cell">
+                            <div class="context-line">
+                                <span class="context-label">Description：</span>
+                                <span class="context-content">${emotion.context}</span>
+                            </div>
+                            <div class="context-line current-text">
+                                <span class="context-label">${character.name}：</span>
+                                <span class="context-content">${emotion.text}</span>
+                                <span class="emotion-tag">${emotion.emotion}</span>
+                            </div>
+                        </td>
+                        <td class="system-cell cosyvoice">
+                            <audio controls class="audio-controls" preload="none" id="cosy2-1.5b-${characterKey}-${emotionKey}-instruction-audio">
+                                <source src="audios/instruction/${characterKey}/cosy2-1.5b-xvector/${emotion.files.cosy2_1_5b}" type="audio/wav">
+                            </audio>
+                        </td>
+                        <td class="system-cell cosyvoice">
+                            <audio controls class="audio-controls" preload="none" id="cosyvoice2-base-${characterKey}-${emotionKey}-instruction-audio">
+                                <source src="audios/instruction/${characterKey}/cosyvoice2-base/${emotion.files.cosyvoice2_base}" type="audio/wav">
+                            </audio>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                // 创建混合情感表格
+                const mixedTable = document.createElement('table');
+                mixedTable.className = 'character-comparison-table';
+                mixedTable.innerHTML = `
+                    <thead>
+                        <tr class="table-header">
+                            <th class="text-header">混合情感文本</th>
+                            <th class="system-header">🎭 CosyVoice2-1.5B-XVector</th>
+                            <th class="system-header">🎭 CosyVoice2-Base</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mixed-${characterKey}-tbody">
+                    </tbody>
+                `;
+                
+                // 为每个混合情感创建行
+                Object.keys(character.mixedEmotions).forEach(emotionKey => {
+                    const emotion = character.mixedEmotions[emotionKey];
+                    const tbody = mixedTable.querySelector(`#mixed-${characterKey}-tbody`);
+                    const row = document.createElement('tr');
+                    row.className = `demo-row ${characterKey}`;
+                    row.innerHTML = `
+                        <td class="text-cell">
+                            <div class="context-line">
+                                <span class="context-label">Description：</span>
+                                <span class="context-content">${emotion.context}</span>
+                            </div>
+                            <div class="context-line current-text">
+                                <span class="context-label">${character.name}：</span>
+                                <span class="context-content">${emotion.text}</span>
+                                <span class="emotion-tag">${emotion.emotion}</span>
+                            </div>
+                        </td>
+                        <td class="system-cell cosyvoice">
+                            <audio controls class="audio-controls" preload="none" id="cosy2-1.5b-${characterKey}-${emotionKey}-mixed-audio">
+                                <source src="audios/mixed/${characterKey}/cosy2-1.5b-xvector/${emotion.files.cosy2_1_5b}" type="audio/wav">
+                            </audio>
+                        </td>
+                        <td class="system-cell cosyvoice">
+                            <audio controls class="audio-controls" preload="none" id="cosyvoice2-base-${characterKey}-${emotionKey}-mixed-audio">
+                                <source src="audios/mixed/${characterKey}/cosyvoice2-base/${emotion.files.cosyvoice2_base}" type="audio/wav">
+                            </audio>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
+                // 添加指令情感部分
+                const instructionSection = document.createElement('div');
+                instructionSection.className = 'comparison-section';
+                instructionSection.innerHTML = '<h3>指令情感控制</h3>';
+                instructionSection.appendChild(instructionTable);
+                characterSection.appendChild(instructionSection);
+                
+                // 添加混合情感部分
+                const mixedSection = document.createElement('div');
+                mixedSection.className = 'comparison-section';
+                mixedSection.innerHTML = '<h3>混合情感控制</h3>';
+                mixedSection.appendChild(mixedTable);
+                characterSection.appendChild(mixedSection);
+                
+                container.appendChild(characterSection);
+            });
+        }
+
+        // 生成角色对比内容
+        function generateCharacterComparison() {
+            const container = document.getElementById('character-comparison');
+            if (!container) {
+                console.error('Character comparison container not found');
+                return;
+            }
+            console.log('Character comparison container found, generating content...');
+
+            // 按指定顺序显示角色：jiangxuening > zhouyi > xiashu
+            const characterOrder = ['jiangxuening', 'zhouyi', 'xiashu'];
+            
+            // 创建主表格
+            const mainTable = document.createElement('table');
+            mainTable.className = 'character-comparison-table';
+            
+            // 创建表头
+            const headerRow = document.createElement('tr');
+            headerRow.className = 'table-header';
+            headerRow.innerHTML = `
+                <th class="text-header">文本内容</th>
+                <th class="system-header">🎭 CosyVoice2</th>
+                <th class="system-header">🎯 Takin-context</th>
+                <th class="system-header">🤖 MOSS-TTSD</th>
+            `;
+            mainTable.appendChild(headerRow);
+            
+            characterOrder.forEach(characterKey => {
+                const character = characterData[characterKey];
+                console.log(`Generating title row for character: ${characterKey}`);
+                
+                // 创建角色标题行
+                const characterTitleRow = document.createElement('tr');
+                characterTitleRow.className = `character-title-row ${characterKey}`;
+                characterTitleRow.innerHTML = `
+                    <td colspan="4" class="character-title-cell">
+                        <div class="character-title-content">
+                            <h3>${character.name}</h3>
+                            <span class="character-description">${character.description}</span>
+                            <div class="prompt-section-inline">
+                                <span class="prompt-label">Prompt：</span>
+                                <audio controls class="audio-controls" preload="none" id="prompt-${characterKey}-audio" style="display: block !important; visibility: visible !important;">
+                                    <source src="audios/duibai/prompt/${characterKey}.wav" type="audio/wav">
+                                </audio>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                mainTable.appendChild(characterTitleRow);
+
+                // 为每个角色创建demo行
+                character.demos.forEach(demo => {
+                    const demoRow = document.createElement('tr');
+                    demoRow.className = `demo-row ${characterKey}`;
+                    demoRow.innerHTML = `
+                        <td class="text-cell">
+                            <div class="context-line">
+                                <span class="context-label">上文：</span>
+                                <span class="context-content">${demo.context}</span>
+                            </div>
+                            <div class="context-line current-text">
+                                <span class="context-label">${character.name}：</span>
+                                <span class="context-content">"${demo.text}"</span>
+                            </div>
+                            <div class="context-line">
+                                <span class="context-label">下文：</span>
+                                <span class="context-content">${demo.nextContext}</span>
+                            </div>
+                        </td>
+                        <td class="system-cell cosyvoice">
+                            <audio controls class="audio-controls" preload="none" id="cosyvoice-${characterKey}-${demo.id}-audio">
+                                <source src="audios/duibai/${characterKey}/${demo.id}-cosyvoice.${characterKey === 'jiangxuening' ? 'mp3' : 'wav'}" type="audio/${characterKey === 'jiangxuening' ? 'mpeg' : 'wav'}">
+                            </audio>
+                        </td>
+                        <td class="system-cell takin">
+                            <audio controls class="audio-controls" preload="none" id="takin-${characterKey}-${demo.id}-audio">
+                                <source src="audios/duibai/${characterKey}/${demo.id}-context.${characterKey === 'jiangxuening' ? 'mp3' : 'wav'}" type="audio/${characterKey === 'jiangxuening' ? 'mpeg' : 'wav'}">
+                            </audio>
+                        </td>
+                        <td class="system-cell moss-ttsd">
+                            <audio controls class="audio-controls" preload="none" id="moss-${characterKey}-${demo.id}-audio">
+                                <source src="audios/duibai/${characterKey}/${demo.id}-moss_ttsd.wav" type="audio/wav">
+                            </audio>
+                        </td>
+                    `;
+                    mainTable.appendChild(demoRow);
+                });
+            });
+            
+            container.appendChild(mainTable);
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, generating character comparison...');
+            // 生成角色对比内容
+            generateCharacterComparison();
+            console.log('Character comparison generated');
+            
+            // 生成情感控制演示内容
+            generateEmotionControlDemo();
+            console.log('Emotion control demo generated');
+        });
+    </script>
+
+        <script>
+        function toggleText() {
+            const preview = document.getElementById('text-preview');
+            const full = document.getElementById('text-full');
+            const btn = document.getElementById('toggle-text-btn');
+            const dots = document.getElementById('text-dots');
+            
+            if (full.style.display === 'none') {
+                preview.style.display = 'none';
+                full.style.display = 'block';
+                btn.textContent = '收起文本';
+                dots.style.display = 'none';
+            } else {
+                preview.style.display = 'block';
+                full.style.display = 'none';
+                btn.textContent = '展开全部文本';
+                dots.style.display = 'inline';
+            }
+        }
+        </script></body>
+</html>
